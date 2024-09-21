@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import BaseUserManager
 from django.utils import timezone
 import datetime
+from users.auth.hashers import UserPasswordHasherPBKDF2
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your models here
 
@@ -23,7 +25,7 @@ class CustomUserManager(BaseUserManager):
 
 # User
 
-class User(AbstractUser):
+class User(models.Model):
     email = models.EmailField(max_length=200, unique=True)  # Email field that must be unique
     username = models.CharField(
         max_length=150, 
