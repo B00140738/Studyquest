@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import User
+from django.contrib.auth.forms import *
+from users.models import User
+
 # Create your views here.
 
 def index(request):
@@ -10,19 +12,14 @@ def index(request):
 
 def signup(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        try:
-            user = User.objects.create_user(username=username, name=name, email=email, password=password)
-            messages.success(request, "Account created successfully!")
-            return redirect('dashboard', user)
-        except ValueError as e:
-            messages.error(request, str(e))
-    
-    return render(request, "users/signup.html")
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            form = SignupForm()
+    return render(request, 'users/login.html', {'form': form})
 
 # Login Logic
 
@@ -42,9 +39,7 @@ def login(request):
 
 # Dashboard
 
-@login_required
-def dashboard(request):
-    user = request.user  # Get the logged-in user
+def dashboard(request): 
     return render(request, "users/dashboard.html", {"user": user})  # Pass the entire user object
 
 def profile(request, user_id):

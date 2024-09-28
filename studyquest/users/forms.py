@@ -1,16 +1,19 @@
 from django import forms
 from .models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import UserCreationForm
 
 # Sign Up Form
 
-class SignupForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    confirm_pass = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
+class SignupForm(UserCreationForm):
+    name = forms.CharField(required=True)
+    username = forms.CharField(required=True)
+    password = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'name', 'email', 'password']
+        fields = ['username', 'name', 'email', 'password1', 'password2']
 
         def clean(self):
             cleaned_data = super().clean()
